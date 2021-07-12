@@ -1,5 +1,8 @@
 class MoviesController < ApplicationController
 
+  before_action :get_sort_filter_params, only: :index
+  after_action  :store_sorting_filter_params, only: :index
+
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -8,7 +11,6 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
-    @ratings_to_show = []
     if params[:ratings] != nil
       @ratings_to_show = params[:ratings].keys
     end
@@ -53,5 +55,17 @@ class MoviesController < ApplicationController
   # This helps make clear which methods respond to requests, and which ones do not.
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
+  end
+
+  def get_sort_filter_params
+    @ratings_to_show = session[:ratings_to_show] || []
+    @sort_by = session[:sort_by]
+    @sort_type = session[:sort_type]
+  end
+
+  def store_sorting_filter_params
+    session[:ratings_to_show] = @ratings_to_show
+    session[:sort_by] = @sort_by
+    session[:sort_type] = @sort_type
   end
 end
