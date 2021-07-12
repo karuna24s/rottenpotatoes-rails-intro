@@ -12,7 +12,12 @@ class MoviesController < ApplicationController
     if params[:ratings] != nil
       @ratings_to_show = params[:ratings].keys
     end
-    @movies = Movie.with_ratings(@ratings_to_show)
+    @sort_by = params[:sort_by]
+    @sort_type = params[:sort_type]
+    if params[:ratings_to_show] != nil
+      @ratings_to_show = params[:ratings_to_show].delete('["" ]').split(",")
+    end
+    @movies = Movie.with_ratings(@ratings_to_show).order("#{@sort_by} #{@sort_type}")
   end
 
   def new
